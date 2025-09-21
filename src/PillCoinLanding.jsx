@@ -63,7 +63,7 @@ export default function PillCoinLanding() {
           <h1 className="text-4xl font-extrabold mb-4">SolPill — the pill addicted to Solana</h1>
           <p className="text-gray-300 mb-4">
             This pill <span className="font-semibold">needs SOL to grow</span>. It grows on incoming buys
-            (simulated) and only dips slightly when it gets hungry again. Overall, it keeps getting bigger.
+             and only dips slightly when it gets hungry again. Overall, it keeps getting bigger.
           </p>
 
           <ul className="text-gray-300 space-y-2 mb-6 list-disc ml-5">
@@ -156,3 +156,4 @@ function PillVisualizer({ scale, particles }) {
     </div>
   );
 }
+
