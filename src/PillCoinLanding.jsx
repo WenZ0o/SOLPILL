@@ -67,25 +67,25 @@ function EnvWarning() {
   );
 }
 
+// ✅ FIXED: Pill always centered
 function PillVisualizer({ scale, feeds }) {
   return (
     <div className="flex flex-col items-center gap-6">
-      <div className="relative w-64 h-64 flex items-center justify-center">
+      <div className="relative flex items-center justify-center w-full">
         <div
-          className="transform transition-transform duration-700 ease-out"
+          className="transform transition-transform duration-700 ease-out mx-auto"
           style={{ transform: `scale(${scale})` }}
         >
           <img
             src="/assets/pill.png"
             alt="Pill"
-            className="w-48 h-48 object-contain drop-shadow-2xl"
+            className="mx-auto w-48 h-48 object-contain drop-shadow-2xl"
           />
         </div>
-        <div className="absolute inset-0 rounded-full opacity-20 animate-pulse" />
       </div>
 
       <div className="text-center">
-        <h3 className="text-2xl font-semibold">The SolPill needs to grow</h3>
+        <h3 className="text-2xl font-semibold">The pill Solana needs to grow</h3>
         <p className="text-sm text-gray-400">
           Every buy ≥ {FEED_THRESHOLD} SOL feeds the pill — it gets thicker.
         </p>
@@ -202,4 +202,3 @@ function MainPage() {
     </div>
   );
 }
-
