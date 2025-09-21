@@ -39,7 +39,6 @@ export default function PillCoinLanding() {
       <div className="max-w-4xl w-full bg-white/5 rounded-2xl p-8 grid place-items-center gap-6">
         <PillVisualizer scale={scale} lastEvent={lastEvent} />
         <div className="text-center text-sm text-gray-300">
-          <p>The pill grows every 5s and slightly dips every 15s — endlessly.</p>
         </div>
       </div>
     </div>
@@ -85,3 +84,4 @@ function PillVisualizer({ scale, lastEvent }) {
     </div>
   );
 }
+
