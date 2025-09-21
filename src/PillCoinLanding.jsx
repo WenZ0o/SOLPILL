@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '@solana/wallet-adapter-react-ui/styles.css';
-import pillImg from './assets/pill.png';
+// Use image from public/assets to avoid bundling failures in CI/CD
+const PILL_PUBLIC_SRC = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL ? import.meta.env.BASE_URL : '/') + 'assets/pill.png';
 
 // Simple, self-running simulation: the pill grows every 5s and slightly shrinks every 15s.
 // It always trends upward and stays centered.
@@ -54,7 +55,7 @@ function PillVisualizer({ scale, lastEvent }) {
           style={{ transform: `scale(${scale})` }}
         >
           <img
-            src={pillImg}
+            src={PILL_PUBLIC_SRC}
             alt="Pill"
             className="mx-auto w-48 h-48 object-contain drop-shadow-2xl"
             onError={(e) => {
