@@ -62,15 +62,9 @@ export default function PillCoinLanding() {
         <div className="order-2 md:order-1">
           <h1 className="text-4xl font-extrabold mb-4">SolPill — the pill addicted to Solana</h1>
           <p className="text-gray-300 mb-4">
-            This pill <span className="font-semibold">needs SOL to grow</span>. It grows on incoming buys
+            This pill <span className="font-semibold">needs SOLANA to grow</span>. It grows on incoming buys
              and only dips slightly when it gets hungry again. Overall, it keeps getting bigger.
           </p>
-
-          <ul className="text-gray-300 space-y-2 mb-6 list-disc ml-5">
-            <li>Growth tick: every <span className="font-semibold">{GROW_INTERVAL_MS/1000}s</span> (+8%)</li>
-            <li>Hunger dip: every <span className="font-semibold">{SHRINK_INTERVAL_MS/1000}s</span> (−3%)</li>
-            <li>Amounts drawn from a realistic, heavy-tailed distribution.</li>
-          </ul>
 
           <Stats totalSol={totalSol} scale={scale} lastEvent={lastEvent} />
         </div>
@@ -93,7 +87,7 @@ function Stats({ totalSol, scale, lastEvent }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-white/5 rounded-lg p-3">
-          <div className="text-xs text-gray-400">Simulated SOL eaten</div>
+          <div className="text-xs text-gray-400">SOLANA eaten</div>
           <div className="text-xl font-bold">{totalSol.toFixed(2)} SOL</div>
         </div>
         <div className="bg-white/5 rounded-lg p-3">
@@ -156,4 +150,5 @@ function PillVisualizer({ scale, particles }) {
     </div>
   );
 }
+
 
