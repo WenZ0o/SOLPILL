@@ -85,7 +85,7 @@ function PillVisualizer({ scale, feeds }) {
       </div>
 
       <div className="text-center">
-        <h3 className="text-2xl font-semibold">The pill Solana needs to grow</h3>
+        <h3 className="text-2xl font-semibold">The SolPill needs to grow</h3>
         <p className="text-sm text-gray-400">
           Every buy ≥ {FEED_THRESHOLD} SOL feeds the pill — it gets thicker.
         </p>
@@ -202,3 +202,4 @@ function MainPage() {
     </div>
   );
 }
+
