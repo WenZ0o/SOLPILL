@@ -1,22 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 // Public image path (works on Vercel + Vite)
 const PILL_PUBLIC_SRC = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL ? import.meta.env.BASE_URL : '/') + 'assets/pill.png';
 
 // --- Simulation settings ---
-const BASE_SCALE = 1;             // starting size
+const BASE_SCALE = 0.6;           // smaller starting size
 const GROW_FACTOR = 1.08;         // +8% per growth tick
 const SHRINK_FACTOR = 0.97;       // −3% per shrink tick (net growth over time)
 const GROW_INTERVAL_MS = 2000;    // grow every 2s
 const SHRINK_INTERVAL_MS = 8000;  // shrink a bit every 8s
-const MAX_SCALE = 6;              // visual safety cap
+const MAX_SCALE = 4;              // cap
 
-// Draw SOL amounts from a log-normal-like distribution for more realistic bursts
 function randomSolAmount() {
-  // Log-normal via exp(N(μ, σ^2)) scaled; tuned to ~0.05–2.5 SOL with heavy tail
-  const mu = Math.log(0.25); // median around 0.25
-  const sigma = 0.8;         // variance
+  const mu = Math.log(0.25);
+  const sigma = 0.8;
   const n = Math.sqrt(-2 * Math.log(Math.random())) * Math.cos(2 * Math.PI * Math.random());
   const val = Math.exp(mu + sigma * n);
   return Math.min(2.5, Math.max(0.05, val));
@@ -25,45 +23,18 @@ function randomSolAmount() {
 export default function PillCoinLanding() {
   const [scale, setScale] = useState(BASE_SCALE);
   const [lastEvent, setLastEvent] = useState('');
-  const [totalSol, setTotalSol] = useState(0); // simulated SOL consumed
-  const [muted, setMuted] = useState(false);
-  const audioCtxRef = useRef(null);
-
-  // Tiny WebAudio pop sound
-  const pop = () => {
-    if (muted) return;
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx();
-      const ctx = audioCtxRef.current;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(520, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.08);
-      g.gain.setValueAtTime(0.001, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
-      o.connect(g).connect(ctx.destination);
-      o.start();
-      o.stop(ctx.currentTime + 0.13);
-    } catch {}
-  };
-
-  // particle system
+  const [totalSol, setTotalSol] = useState(0);
   const [particles, setParticles] = useState([]);
+
   const spawnParticles = (count = 10) => {
     const newParts = Array.from({ length: count }).map((_, i) => ({
       id: `${Date.now()}-${i}`,
-      x: 0,
-      y: 0,
-      dx: (Math.random() - 0.5) * 120, // px
+      dx: (Math.random() - 0.5) * 120,
       dy: -Math.random() * 140 - 40,
       life: 700 + Math.random() * 500,
-      size: 6 + Math.random() * 6,
+      size: 4 + Math.random() * 5,
     }));
     setParticles((p) => [...p, ...newParts]);
-    // auto-remove after max life
     setTimeout(() => setParticles((p) => p.filter((pt) => !newParts.find(n => n.id === pt.id))), 1300);
   };
 
@@ -73,7 +44,6 @@ export default function PillCoinLanding() {
       const fed = randomSolAmount();
       setTotalSol((x) => +(x + fed).toFixed(2));
       setLastEvent('grow');
-      pop();
       spawnParticles(12);
     }, GROW_INTERVAL_MS);
 
@@ -83,7 +53,7 @@ export default function PillCoinLanding() {
     }, SHRINK_INTERVAL_MS);
 
     return () => { clearInterval(grow); clearInterval(shrink); };
-  }, [muted]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-indigo-900 to-black text-white flex items-center justify-center p-6">
@@ -102,19 +72,19 @@ export default function PillCoinLanding() {
             <li>Amounts drawn from a realistic, heavy-tailed distribution.</li>
           </ul>
 
-          <Stats totalSol={totalSol} scale={scale} lastEvent={lastEvent} muted={muted} setMuted={setMuted} />
+          <Stats totalSol={totalSol} scale={scale} lastEvent={lastEvent} />
         </div>
 
         {/* Pill column */}
         <div className="order-1 md:order-2 flex items-center justify-center">
-          <PillVisualizer scale={scale} particles={particles} />
+          <PillVisualizer scale={scale} particles={particles} /* breathing enabled */ />
         </div>
       </div>
     </div>
   );
 }
 
-function Stats({ totalSol, scale, lastEvent, muted, setMuted }) {
+function Stats({ totalSol, scale, lastEvent }) {
   return (
     <div className="space-y-3">
       <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 text-emerald-300 px-3 py-1 text-sm">
@@ -131,12 +101,7 @@ function Stats({ totalSol, scale, lastEvent, muted, setMuted }) {
           <div className="text-xl font-bold">{scale.toFixed(2)}×</div>
         </div>
       </div>
-      <div className="flex items-center justify-between text-xs text-gray-400">
-        <span>Last event: {lastEvent || '—'}</span>
-        <button onClick={() => setMuted((m) => !m)} className="px-2 py-1 rounded bg-white/10 hover:bg-white/15 text-white">
-          {muted ? 'Unmute' : 'Mute'} pop
-        </button>
-      </div>
+      <div className="text-xs text-gray-400">Last event: {lastEvent || '—'}</div>
     </div>
   );
 }
@@ -145,16 +110,16 @@ function PillVisualizer({ scale, particles }) {
   return (
     <div className="relative w-full flex items-center justify-center">
       {/* outer halo */}
-      <div className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full bg-emerald-400/10 blur-3xl" />
+      <div className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full bg-emerald-400/10 blur-3xl animate-pulse" />
 
       <div
-        className="transform transition-transform duration-700 ease-out mx-auto"
+        className="transform transition-transform duration-700 ease-out mx-auto animate-[pulse_3s_ease-in-out_infinite]"
         style={{ transform: `scale(${scale})` }}
       >
         <img
           src={PILL_PUBLIC_SRC}
           alt="Pill"
-          className="mx-auto w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-2xl select-none"
+          className="mx-auto w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl select-none"
           draggable={false}
           onError={(e) => {
             e.currentTarget.style.display = 'none';
@@ -166,7 +131,7 @@ function PillVisualizer({ scale, particles }) {
         <div
           id="pill-fallback"
           style={{ display: 'none' }}
-          className="mx-auto w-48 h-48 rounded-full bg-gradient-to-br from-green-400 to-emerald-700 flex items-center justify-center text-white font-bold"
+          className="mx-auto w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-emerald-700 flex items-center justify-center text-white font-bold"
         >
           Pill
         </div>
